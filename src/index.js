@@ -13,6 +13,7 @@ const app = ({path}) => (req, res, next) => Promise
   .resolve()
   .then(
     () => {
+      // XXX: react-payment-request-api causes conflicts with SSR.
       //{container: renderToString(<App isServerSide />)}
       const html = `
 <!DOCTYPE html>
