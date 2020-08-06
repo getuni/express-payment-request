@@ -1,0 +1,41 @@
+{
+  "name": "express-payment-request",
+  "version": "0.0.1-alpha.0",
+  "description": "💸 A middleware for Express which can be used to serve the Payment Request API.",
+  "main": "dist",
+  "repository": "https://github.com/cawfree/express-payment-request",
+  "author": "Alex Thomas (@cawfree) <hello@cawfree.com>",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "build": "yarn ; rm -rf dist ; yarn webpack --config webpack.config.js -d ; babel src --out-dir dist ; rm -rf node_modules"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.10.5",
+    "@babel/core": "^7.11.1",
+    "@babel/node": "^7.10.5",
+    "@babel/polyfill": "^7.10.4",
+    "@babel/preset-env": "^7.11.0",
+    "@babel/preset-react": "^7.10.4",
+    "babel-loader": "^8.1.0",
+    "copy-webpack-plugin": "^6.0.3",
+    "css-loader": "^4.2.1",
+    "file-loader": "^6.0.0",
+    "husky": "^4.2.5",
+    "jest": "^26.2.2",
+    "leasot": "^11.1.0",
+    "prettier": "^2.0.5",
+    "style-loader": "^1.2.1",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12"
+  },
+  "dependencies": {
+    "app-root-path": "^3.0.0",
+    "express": "^4.17.1",
+    "handlebars": "^4.7.6",
+    "http-status-codes": "^1.4.0",
+    "prop-types": "^15.7.2",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
+  }
+}
