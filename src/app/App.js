@@ -2,11 +2,11 @@ import React, {useCallback, useState} from "react";
 import PropTypes from "prop-types";
 import withPaymentRequest from "react-payment-request-api";
 
-import {PaymentButton} from "./components";
+import {MaybePaymentButton} from "./components";
 
 const App = ({isServerSide, methodData, details, options, ...extraProps}) => {
   const [Button] = useState(
-    () => !isServerSide ? withPaymentRequest()(PaymentButton) : PaymentButton
+    () => !isServerSide ? withPaymentRequest()(MaybePaymentButton) : MaybePaymentButton
   );
   const onShowSuccess = useCallback(
     (result, resolve, reject) => {
@@ -48,7 +48,7 @@ App.displayName = "App";
 
 App.propTypes = {
   isServerSide: PropTypes.bool,
-  methodData: PropTypes.shape({}).isRequired,
+  methodData: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
   details: PropTypes.shape({}).isRequired,
   options: PropTypes.shape({}),
 };
