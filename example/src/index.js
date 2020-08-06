@@ -2,6 +2,7 @@ const express = require('express');
 const https = require('https');
 const fs = require('fs');
 const {paymentRequest} = require("express-payment-request");
+const {encode: btoa} = require("base-64");
 
 const port = 3000;
 
@@ -53,3 +54,21 @@ https.createServer(options, app)
   .listen(port, () => null);
 
 app.listen(port + 1, () => null);
+
+
+const details = {
+  displayItems: [
+    {
+      label: 'A really not scary amount. :)',
+      amount: { currency: 'USD', value: '0.01' },
+    }, 
+  ],
+  total: {
+    label: 'Total due',
+    amount: { currency: 'USD', value : '0.01' },
+  },
+};
+
+console.log(`http://localhost:3001/payment?details=${btoa(JSON.stringify(details))}`);
+console.log(`https://localhost:3000/payment?details=${btoa(JSON.stringify(details))}`);
+

@@ -6,6 +6,7 @@ import {OK} from "http-status-codes";
 import appRootPath from "app-root-path";
 import {renderToString} from "react-dom/server";
 import {compile} from "handlebars";
+import {decode as atob} from "base-64";
 
 import App from "./app/App";
 
@@ -13,6 +14,8 @@ const app = ({path, methodData}) => (req, res, next) => Promise
   .resolve()
   .then(
     () => {
+      const {query} = req;
+      const {details} = query;
       const html = `
 <!DOCTYPE html>
 <html>
@@ -25,24 +28,7 @@ const app = ({path, methodData}) => (req, res, next) => Promise
     <script type="text/javascript">
       window.__REACT_APP_CONFIG__ = {
         methodData: ${JSON.stringify(methodData)},
-        // TODO: Drive this from the request.
-        details: {
-          displayItems: [{
-            label: 'Original donation amount',
-            amount: { currency: 'USD', value: '65.00' },
-          }, {
-            label: 'Friends and family discount',
-            amount: { currency: 'USD', value: '-10.00' },
-          }, {
-            label: 'Delivery tax',
-            pending: true,
-            amount: { currency: 'USD', value: '10.00' },
-          }],
-          total: {
-            label: 'Total due',
-            amount: { currency: 'USD', value : '55.00' },
-          },
-        },
+        details: ${atob(details)}, 
       };
     </script>
   </head>
