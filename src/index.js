@@ -9,12 +9,10 @@ import {compile} from "handlebars";
 
 import App from "./app/App";
 
-const app = ({path}) => (req, res, next) => Promise
+const app = ({path, methodData}) => (req, res, next) => Promise
   .resolve()
   .then(
     () => {
-      // XXX: react-payment-request-api causes conflicts with SSR.
-      //{container: renderToString(<App isServerSide />)}
       const html = `
 <!DOCTYPE html>
 <html>
@@ -26,6 +24,8 @@ const app = ({path}) => (req, res, next) => Promise
     </style>
     <script type="text/javascript">
       window.__REACT_APP_CONFIG__ = {
+        methodData: ${JSON.stringify(methodData)},
+        // TODO: Drive this from the request.
         details: {
           displayItems: [{
             label: 'Original donation amount',
@@ -43,46 +43,11 @@ const app = ({path}) => (req, res, next) => Promise
             amount: { currency: 'USD', value : '55.00' },
           },
         },
-        methodData: [
-          {
-            supportedMethods: ['basic-card'],
-            data: {
-              supportedNetworks: ['visa', 'mastercard', 'diners'],
-            },
-          },
-          {
-            supportedMethods: ['https://android.com/pay'],
-            data: {
-              merchantId: 'fake',
-              environment: 'TEST',
-              allowedCardNetwork: ['AMEX', 'MASTERCARD', 'VISA', 'DISCOVER'],
-              paymentMethodTokenizationParameters: {
-                tokenizationType: 'GATEWAY_TOKEN',
-                parameters: {
-                  gateway: 'stripe',
-                  "stripe:publishableKey": 'fake',
-                  "stripe:version": '2016-07-06'
-                },
-              },
-            },
-          },
-          {
-            supportedMethods: 'https://apple.com/apple-pay',
-            data: {
-              version: 3,
-              merchantIdentifier: 'merchant.com.example',
-              merchantCapabilities: ['supportsDebit'],
-              supportedNetworks: ['masterCard', 'visa'],
-              countryCode: 'US',
-            },
-          },
-        ],
       };
     </script>
   </head>
   <body>
     <div id="container"></div>
-    <!--<div id="container">{{{container}}}</div>-->
     <script src="${path}/app.js" charset="utf-8"></script>
     <script src="${path}/vendor.js" charset="utf-8"></script>
   </body>
