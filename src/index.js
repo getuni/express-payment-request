@@ -13,6 +13,7 @@ const app = ({path}) => (req, res, next) => Promise
   .resolve()
   .then(
     () => {
+      //{container: renderToString(<App isServerSide />)}
       const html = `
 <!DOCTYPE html>
 <html>
@@ -24,15 +25,14 @@ const app = ({path}) => (req, res, next) => Promise
     </style>
   </head>
   <body>
-    <div id="container">{{{container}}}</div>
+    <div id="container"></div>
+    <!--<div id="container">{{{container}}}</div>-->
     <script src="${path}/app.js" charset="utf-8"></script>
     <script src="${path}/vendor.js" charset="utf-8"></script>
   </body>
 </html>
       `.trim();
-      return res
-        .status(OK)
-        .send(compile(html)({container: renderToString(<App />)}));
+      return res.status(OK).send(compile(html)({}));
     },
   )
   .catch(next);

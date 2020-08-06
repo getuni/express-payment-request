@@ -123,6 +123,7 @@ express-payment-request@../:
     prop-types "^15.7.2"
     react "^16.13.1"
     react-dom "^16.13.1"
+    react-payment-request-api "^3.1.0"
 
 express@^4.17.1:
   version "4.17.1"
@@ -372,7 +373,7 @@ raw-body@2.4.0:
     iconv-lite "0.4.24"
     unpipe "1.0.0"
 
-react-dom@^16.13.1:
+react-dom@^16.13.1, react-dom@^16.5.2:
   version "16.13.1"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-16.13.1.tgz#c1bd37331a0486c078ee54c4740720993b2e0e7f"
   integrity sha512-81PIMmVLnCNLO/fFOQxdQkvEq/+Hfpv24XNJfpyZhTRfO0QcmQIF/PgCa1zCOj2w1hrn12MFLyaJ/G0+Mxtfag==
@@ -387,7 +388,15 @@ react-is@^16.8.1:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
   integrity sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==
 
-react@^16.13.1:
+react-payment-request-api@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/react-payment-request-api/-/react-payment-request-api-3.1.0.tgz#111387a39fbe959d286f95b803c442c298800ce9"
+  integrity sha512-/VZ9OBoUKTZl7vLnCdLp/nXhl5vOlJxQUEbMVIcI5Q9MMTRWqCOTrOo5PcvU5oApx1zM7HbzIzP93ygCfRy2jg==
+  dependencies:
+    react "^16.5.2"
+    react-dom "^16.5.2"
+
+react@^16.13.1, react@^16.5.2:
   version "16.13.1"
   resolved "https://registry.yarnpkg.com/react/-/react-16.13.1.tgz#2e818822f1a9743122c063d6410d85c1e3afe48e"
   integrity sha512-YMZQQq32xHLX0bz5Mnibv1/LHb3Sqzngu7xstSM+vrkE5Kzr9xE0yMByK5kMoTK30YVJE61WfbxIFFvfeDKT1w==
