@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "node src"
+    "start": "node src --max-http-header-size=819200"
   },
   "dependencies": {
     "@babel/polyfill": "^7.10.4",

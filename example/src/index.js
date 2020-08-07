@@ -6,19 +6,13 @@ const {encode: btoa} = require("base-64");
 
 const port = 3000;
 
-// TODO: order might be incorrect
-//const ca = fs.readFileSync('./certs/ecc/payment_processing_certificate.crt', "utf8");
-//const ca = fs.readFileSync('./certs/rsa/merchant_id.pem', "utf8");
-//const ca = fs.readFileSync('./certs/rsa/newfile.pem', "utf8");
-//const ca = fs.readFileSync('./certs/rsa/newfile.pem', "utf8");
-//const ca = fs.readFileSync('./certs/rsa/newfile.pem', "utf8");
-const cert = fs.readFileSync("./certs/rsa/private.cert");
-const key = fs.readFileSync("./certs/rsa/private.key");
+const pfx = fs.readFileSync("./certs/private.p12", "utf8");
+const passphrase = "your-passphrase";
 
 const app = express()
   .use(paymentRequest(
     { 
-      https: { cert, key },
+      https: { pfx, passphrase },
       methodData: [
         {
           supportedMethods: ['basic-card'],
