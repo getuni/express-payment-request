@@ -26,6 +26,12 @@ const App = ({isServerSide, methodData, details, options, ...extraProps}) => {
             console.log('about to complete');
             event.complete(sessionPromise);
           };
+          
+          request.show()
+            .then(console.log)
+            .catch(console.error);
+          //const status = processResponse(response);
+          //response.complete(status);
         } else {
           console.log('consider apple pay js instead');
         // Consider using Apple Pay JS instead.
@@ -36,7 +42,12 @@ const App = ({isServerSide, methodData, details, options, ...extraProps}) => {
     },
   );
   return (
-    <button style="-webkit-appearance: -apple-pay-button;" onClick={onClick} />
+    <div>
+      <button
+        onClick={onClick}
+        children="Pay"
+      />
+    </div>
   );
   //const [Button] = useState(
   //  () => !isServerSide ? withPaymentRequest()(MaybePaymentButton) : MaybePaymentButton
