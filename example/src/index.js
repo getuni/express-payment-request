@@ -6,13 +6,13 @@ const {encode: btoa} = require("base-64");
 
 const port = 3000;
 
-const key = fs.readFileSync('./certs/server.key');
-const cert = fs.readFileSync('./certs/server.crt');
-const options = { key, cert };
+// TODO: order might be incorrect
+const ca = fs.readFileSync('./certs/payment_processing_certificate.crt', "utf8");
 
 const app = express()
   .use(paymentRequest(
     { 
+      https: { ca },
       methodData: [
         {
           supportedMethods: ['basic-card'],
@@ -50,7 +50,10 @@ const app = express()
     }
   ));
 
-https.createServer(options, app)
+const key = fs.readFileSync('./https/server.key');
+const cert = fs.readFileSync('./https/server.crt');
+
+https.createServer({ key, cert }, app)
   .listen(port, () => null);
 
 app.listen(port + 1, () => null);
