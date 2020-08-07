@@ -42,7 +42,13 @@ const App = ({isServerSide, methodData, details, options, ...extraProps}) => {
     },
   );
   return (
-    <div>
+    <div
+      style={{
+        width: 100,
+        height: 100,
+        backgroundColor: "green",
+      }}
+    >
       <button
         onClick={onClick}
         children="Pay"
