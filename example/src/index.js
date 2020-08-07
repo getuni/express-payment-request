@@ -6,13 +6,18 @@ const {encode: btoa} = require("base-64");
 
 const port = 3000;
 
-const pfx = fs.readFileSync("./certs/private.p12", "utf8");
-const passphrase = "your-passphrase";
+const pfx = fs.readFileSync("./certs/merchant_id.p12");
+const passphrase = "your passphrase";
+
+console.log(pfx);
 
 const app = express()
   .use(paymentRequest(
     { 
-      https: { pfx, passphrase },
+      https: {
+        pfx,
+        passphrase,
+      },
       methodData: [
         {
           supportedMethods: ['basic-card'],

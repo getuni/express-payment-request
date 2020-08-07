@@ -23,6 +23,7 @@ const validate = ({ https: { ...extras } }) => (req, res, next) => Promise
 
       //return axios({url, method: "get"});
       console.log('about to get', url);
+      console.log(extras);
 
       return axios.get(
         url,
