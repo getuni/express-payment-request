@@ -1,20 +1,28 @@
+require("dotenv/config");
+
 const express = require('express');
 const https = require('https');
 const fs = require('fs');
 const {paymentRequest} = require("express-payment-request");
 const {encode: btoa} = require("base-64");
 
-const port = 3000;
+const {
+  MERCHANT_ID_P12_PATH,
+  MERCHANT_ID,
+  DOMAIN_NAME,
+  PASSPHRASE,
+  PORT,
+} = process.env;
 
-const pfx = fs.readFileSync("path/to/your/merchant_id.p12");
-const passphrase = "your-passphrase-for-merchant_id.p12";
+const pfx = fs.readFileSync(MERCHANT_ID_P12_PATH);
+const passphrase = PASSPHRASE;
 
 const app = express()
   .use(paymentRequest(
     { 
       merchantInfo: {
-        merchantIdentifier: "your.merchant.identifier",
-        domainName: "yourdomain.com",
+        merchantIdentifier: MERCHANT_ID,
+        domainName: DOMAIN_NAME,
         displayName: "MyStore",
       },
       https: { pfx, passphrase },
@@ -58,9 +66,9 @@ const app = express()
 // XXX: To load a https server (compatible to permit experimentation with Safari),
 //      you can allocate a set of test credentials using https://github.com/fraigo/https-localhost-ssl-certificate
 https.createServer({ key: fs.readFileSync('./https/server.key'), cert: fs.readFileSync('./https/server.crt') }, app)
-  .listen(port, () => null);
+  .listen(parseInt(PORT), () => null);
 
-app.listen(port + 1, () => null);
+app.listen(parseInt(PORT) + 1, () => null);
 
 const details = {
   displayItems: [

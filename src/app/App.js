@@ -5,7 +5,8 @@ import axios from "axios";
 import {encode as btoa} from "base-64";
 
 // XXX: Obviously this is super apple-pay specific, but we can extend this in future.
-const App = ({isServerSide, methodData, details, options, path, ...extraProps}) => {
+const App = ({isServerSide, methodData, details, options, path, host, ...extraProps}) => {
+  console.warn('host is', host);
   const [applePayAvailable] = useState(
     () => (window.ApplePaySession && ApplePaySession.canMakePayments() && window.PaymentRequest),
   );
@@ -15,28 +16,36 @@ const App = ({isServerSide, methodData, details, options, path, ...extraProps}) 
       request.onmerchantvalidation = (event) => {
         const {validationURL: url} = event;
         return axios({
-          // TODO: This should be driven by config.
-          url: `https://www.cawfree.com${path}/validate?url=${btoa(url)}`,
+          url: `${host}${path}/validate?url=${btoa(url)}`,
           method: 'get',
         })
-          .then(({data}) => console.log(data)) // TODO: event.complete(data)
+          .then(
+            ({data}) => {
+              console.warn('got data!', data);
+              return event.complete(Promise.resolve(data));
+            },
+          )
+          //.then(({data}) => console.log(data)) // TODO: event.complete(data)
           .catch(console.error);
       };
 
       /* show Apple Pay modal */
       return request.show()
+        .then(() => console.log('would mark success'));
         /* mark as successful */
-        .then(response => response.complete("success"));
+        //.then(response => response.complete("success"));
     },
     [methodData, details, options],
   );
   if (applePayAvailable) {
     // TODO: Use a nice graphic!
     return (
-      <button
-        onClick={() => onClickApplePay().then(console.log).catch(console.error)}
-        children="Pay with ApplePay"
-      />
+      <div>
+        <button
+          onClick={() => onClickApplePay().then(console.log).catch(console.error)}
+          children="Pay with ApplePay"
+        />
+      </div>
     );
   }
   return "Sorry, Apple Pay is not supported.";
@@ -50,6 +59,7 @@ App.propTypes = {
   details: PropTypes.shape({}).isRequired,
   options: PropTypes.shape({}),
   path: PropTypes.string.isRequired,
+  host: PropTypes.string.isRequired,
 };
 
 App.defaultProps = {
