@@ -11,20 +11,20 @@ const App = ({isServerSide, methodData, details, options, ...extraProps}) => {
   const onShowSuccess = useCallback(
     (result, resolve, reject) => {
       console.log('Result:', result);
+      resolve(result);
+      alert(result);
     },
   );
   const onShowFail = useCallback(
     (error) => {
       console.error(error);
+      alert(error);
     },
   );
   const onMerchantValidation = useCallback(
-    (e) => {
-      console.log('merchant validation', e);
-      //onMerchantValidation: (event) => {
-      //    // XXX: Where to send the request?
-      //    setTimeout(() => event.complete(Promise.resolve(event.validationURL)), 3000);
-      //  },
+    (event) => {
+      console.log(event);
+      event.complete(Promise.resolve(event.validationURL));
     },
   );
   return (
