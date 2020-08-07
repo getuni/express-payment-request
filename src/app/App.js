@@ -18,7 +18,9 @@ const App = ({isServerSide, methodData, details, options, path, ...extraProps}) 
         const {validationURL: url} = event;
         // XXX: Pass the validationUrl confirmation to the server.
         axios({
-          url: `https://localhost:3000${path}/validate?url=${btoa(url)}`,
+          // TODO: This should be driven by config.
+          //url: `https://localhost:3000${path}/validate?url=${btoa(url)}`,
+          url: `https://www.cawfree.com${path}/validate?url=${btoa(url)}`,
           method: 'get',
         })
           .then(({data}) => console.log(data))

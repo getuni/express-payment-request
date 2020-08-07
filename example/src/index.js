@@ -63,12 +63,12 @@ const details = {
   displayItems: [
     {
       label: 'A really not scary amount. :)',
-      amount: { currency: 'USD', value: '5.00' },
+      amount: { currency: 'USD', value: '0.01' },
     }, 
   ],
   total: {
     label: 'Total due',
-    amount: { currency: 'USD', value : '5.00' },
+    amount: { currency: 'USD', value : '0.01' },
   },
 };
 
