@@ -1,6 +1,6 @@
 {
   "name": "express-payment-request",
-  "version": "0.0.1-alpha.7",
+  "version": "0.0.1-alpha.8",
   "description": "💸 A middleware for Express which can be used to serve the Payment Request API.",
   "main": "dist",
   "repository": "https://github.com/cawfree/express-payment-request",
