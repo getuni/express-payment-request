@@ -4,8 +4,6 @@ import withPaymentRequest from "react-payment-request-api";
 import axios from "axios";
 import {encode as btoa} from "base-64";
 
-import {MaybePaymentButton} from "./components";
-
 // XXX: Obviously this is super apple-pay specific, but we can extend this in future.
 const App = ({isServerSide, methodData, details, options, path, ...extraProps}) => {
   const [applePayAvailable] = useState(
@@ -16,34 +14,13 @@ const App = ({isServerSide, methodData, details, options, path, ...extraProps}) 
       const request = new PaymentRequest(methodData, details, options);
       request.onmerchantvalidation = (event) => {
         const {validationURL: url} = event;
-        // XXX: Pass the validationUrl confirmation to the server.
-        axios({
+        return axios({
           // TODO: This should be driven by config.
-          //url: `https://localhost:3000${path}/validate?url=${btoa(url)}`,
           url: `https://www.cawfree.com${path}/validate?url=${btoa(url)}`,
           method: 'get',
         })
-          .then(({data}) => console.log(data))
+          .then(({data}) => console.log(data)) // TODO: event.complete(data)
           .catch(console.error);
-
-        //console.log('event is', event);
-        //console.log(event.validationURL);
-        // TODO: Manage internal negotation of the payment? Use express _somehow_.
-        //       How to actually let it through.
-        //const sessionPromise = Promise.resolve(event.validationURL);
-        //console.log("About to complete payment");
-        //// TODO: Completion state should be defined by the api using the url data
-        //return new Promise(resolve => setTimeout(resolve, 2000))
-        //  .then(() => event.complete())
-        //  .then(
-        //    () => console.warn('did complete successfully'),
-        //  )
-        //  .catch(
-        //    (e) => {
-        //      console.error('validation completion error', e);
-        //      return Promise.reject(e);
-        //    },
-        //  );
       };
 
       /* show Apple Pay modal */

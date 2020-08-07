@@ -8,36 +8,28 @@ import {renderToString} from "react-dom/server";
 import {compile} from "handlebars";
 import {decode as atob} from "base-64";
 import axios from "axios";
-import fs from "fs";
 import https from "https";
 
 import App from "./app/App";
 
-const validate = ({ https: { ...extras } }) => (req, res, next) => Promise
+const validate = ({ merchantInfo, https: { ...extras } }) => (req, res, next) => Promise
   .resolve()
   .then(
     () => {
       const {query} = req;
       const {url: validationUrl} = query;
       const url = atob(validationUrl);
-
-      //return axios({url, method: "get"});
-      console.log('about to get', url);
-      console.log(extras);
-
-      return axios.get(
-        url,
+      return axios(
         {
-          httpsAgent: new https.Agent(extras),
+          url,
+          method: "post",
+          data: merchantInfo,
+          httpsAgent: new https.Agent({...extras}),
         },
       );
     },
   )
-  .then(
-    ({ data }) => {
-      console.log('server got', data);
-    },
-  )
+  .then(({data}) => res.status(OK).json(data))
   .catch(next);
 
 const app = ({path, methodData}) => (req, res, next) => Promise
@@ -80,11 +72,11 @@ const defaultOptions = {
 };
 
 export const paymentRequest = (options = defaultOptions) => {
-  const {https, ...opts} = {...defaultOptions, ...options};
+  const {https, merchantInfo, ...opts} = {...defaultOptions, ...options};
   const {path} = opts;
   return express()
     .get(`${path}/app.js`, (_, res) => res.status(OK).sendFile(appRootPath + '/node_modules/express-payment-request/dist/app.js'))
     .get(`${path}/vendor.js`, (_, res) => res.status(OK).sendFile(appRootPath + '/node_modules/express-payment-request/dist/vendor.js'))
-    .get(`${path}/validate`, validate({ https }))
+    .get(`${path}/validate`, validate({ https, merchantInfo }))
     .get(path, app(opts));
 };
