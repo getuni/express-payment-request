@@ -30,3 +30,40 @@ Convert  Apple Pay ECC 256 (Private).p12 to .crt (Remember export password from
 openssl pkcs12 -in Apple\ Pay\ ECC\ 256\ \(Private\).p12 -nodes -out private.key -nocerts
 ```
 
+How it works:
+https://webkit.org/blog/8182/introducing-the-payment-request-api-for-apple-pay/
+
+
+Apple's Merchant Identity (required for web)
+
+```
+openssl x509 -inform der -in merchant_id.cer -out merchant_id.pem
+```
+
+The address has certificate of SHA 256 (RSA) Public Key 256 Bytes
+
+
+```
+https://stackoverflow.com/questions/15144046/converting-pkcs12-certificate-into-pem-using-openssl
+
+https://stackoverflow.com/questions/15144046/converting-pkcs12-certificate-into-pem-using-openssl (generate .pem completely unlocked)
+```
+
+without private key (?) unencrypted
+
+openssl pkcs12 -in path.p12 -out newfile.pem -nodes
+
+
+https://gist.github.com/jagdeepsingh/c538e21f3839f65732a5932e35809d60
+
+
+Convert p12 to a .key
+
+https://stackoverflow.com/questions/16075846/how-to-change-a-p12-file-to-key-file
+openssl pkcs12 -in out.p12 -nodes -out private.key -nocerts
+
+
+generate an new .cert using the key
+
+openssl req -new -x509 -nodes -sha256 -days 365 -key host.key -out host.cert
+
