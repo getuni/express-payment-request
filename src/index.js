@@ -38,7 +38,6 @@ const app = ({path, methodData}) => (req, res, next) => Promise
     () => {
       const {query} = req;
       const {details} = query;
-      // TODO: Host and Path are looking like the same thing.
       const host = `https://${req.get("host")}`;
       const html = `
 <!DOCTYPE html>

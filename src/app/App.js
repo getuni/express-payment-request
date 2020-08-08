@@ -6,10 +6,11 @@ import {encode as btoa} from "base-64";
 
 // XXX: Obviously this is super apple-pay specific, but we can extend this in future.
 const App = ({isServerSide, methodData, details, options, path, host, ...extraProps}) => {
-  const [applePayAvailable] = useState(
-    () => (window.ApplePaySession && ApplePaySession.canMakePayments() && window.PaymentRequest),
+  const [paymentRequestAvailable] = useState(
+    () => !!window.PaymentRequest,
+    //() => (window.ApplePaySession && ApplePaySession.canMakePayments() && window.PaymentRequest),
   );
-  const onClickApplePay = useCallback(
+  const onClickPay = useCallback(
     () => {
       const request = new PaymentRequest(methodData, details, options);
       request.onmerchantvalidation = (event) => {
@@ -21,27 +22,26 @@ const App = ({isServerSide, methodData, details, options, path, host, ...extraPr
             false,
           );
       };
-      /* show Apple Pay modal */
+      /* show payment request modal */
       return request.show()
-        .then((e) => console.log('did finished showing', e))
-        //.then(response => response.complete("success"))
-        //.then(() => console.log('did finish'))
+        // TODO: modulate response? remember that the btoa can be exploited...
+        .then(response => response.complete("success"))
         .catch(console.error);
     },
     [methodData, details, options],
   );
-  if (applePayAvailable) {
+  if (paymentRequestAvailable) {
     // TODO: Use a nice graphic!
     return (
       <div>
         <button
-          onClick={() => onClickApplePay().then(console.log).catch(console.error)}
-          children="Pay with ApplePay"
+          onClick={() => onClickPay().then(console.log).catch(console.error)}
+          children="Pay"
         />
       </div>
     );
   }
-  return "Sorry, Apple Pay is not supported.";
+  return "Sorry, Payment is not supported.";
 };
 
 App.displayName = "App";
