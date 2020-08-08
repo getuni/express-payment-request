@@ -6,7 +6,6 @@ import {encode as btoa} from "base-64";
 
 // XXX: Obviously this is super apple-pay specific, but we can extend this in future.
 const App = ({isServerSide, methodData, details, options, path, host, ...extraProps}) => {
-  console.warn('host is', host);
   const [applePayAvailable] = useState(
     () => (window.ApplePaySession && ApplePaySession.canMakePayments() && window.PaymentRequest),
   );
@@ -15,25 +14,19 @@ const App = ({isServerSide, methodData, details, options, path, host, ...extraPr
       const request = new PaymentRequest(methodData, details, options);
       request.onmerchantvalidation = (event) => {
         const {validationURL: url} = event;
-        return axios({
-          url: `${host}${path}/validate?url=${btoa(url)}`,
-          method: 'get',
-        })
-          .then(
-            ({data}) => {
-              console.warn('got data!', data);
-              return event.complete(Promise.resolve(data));
-            },
-          )
-          //.then(({data}) => console.log(data)) // TODO: event.complete(data)
-          .catch(console.error);
+        return event
+          .complete(
+            axios({ url: `${host}${path}/validate?url=${btoa(url)}`, method: 'get' })
+              .then(({data}) => data),
+            false,
+          );
       };
-
       /* show Apple Pay modal */
       return request.show()
-        .then(() => console.log('would mark success'));
-        /* mark as successful */
-        //.then(response => response.complete("success"));
+        .then((e) => console.log('did finished showing', e))
+        //.then(response => response.complete("success"))
+        //.then(() => console.log('did finish'))
+        .catch(console.error);
     },
     [methodData, details, options],
   );
