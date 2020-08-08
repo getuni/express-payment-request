@@ -59,6 +59,9 @@ const app = ({path, methodData}) => (req, res, next) => Promise
   </head>
   <body>
     <div id="container"></div>
+    <div id="root"></div>
+    <script src="${path}/root/app.js" charset="utf-8"></script>
+    <script src="${path}/root/vendor.js" charset="utf-8"></script>
     <script src="${path}/app.js" charset="utf-8"></script>
     <script src="${path}/vendor.js" charset="utf-8"></script>
   </body>

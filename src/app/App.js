@@ -1,17 +1,20 @@
-import React, {useCallback, useState} from "react";
+import React, {useEffect, useCallback, useState} from "react";
 import PropTypes from "prop-types";
 import withPaymentRequest from "react-payment-request-api";
 import axios from "axios";
 import {encode as btoa} from "base-64";
 
 // XXX: Obviously this is super apple-pay specific, but we can extend this in future.
-const App = ({isServerSide, methodData, details, options, path, host, ...extraProps}) => {
+const App = ({isServerSide, methodData, details, options, path, host, postMessageStream, ...extraProps}) => {
   const [paymentRequestAvailable] = useState(
     () => !!window.PaymentRequest,
     //() => (window.ApplePaySession && ApplePaySession.canMakePayments() && window.PaymentRequest),
   );
-  const onClickPay = useCallback(
+  const requestPay = useCallback(
     () => {
+      if (!window.PaymentRequest) {
+        return Promise.reject(new Error(`Payment Requests are not supported on this browser.`));
+      }
       const request = new PaymentRequest(methodData, details, options);
       request.onmerchantvalidation = (event) => {
         const {validationURL: url} = event;
@@ -22,26 +25,31 @@ const App = ({isServerSide, methodData, details, options, path, host, ...extraPr
             false,
           );
       };
+
       /* show payment request modal */
       return request.show()
         // TODO: modulate response? remember that the btoa can be exploited...
-        .then(response => response.complete("success"))
-        .catch(console.error);
+        .then(response => response.complete("success"));
     },
     [methodData, details, options],
   );
-  if (paymentRequestAvailable) {
-    // TODO: Use a nice graphic!
-    return (
-      <div>
-        <button
-          onClick={() => onClickPay().then(console.log).catch(console.error)}
-          children="Pay"
-        />
-      </div>
-    );
-  }
-  return "Sorry, Payment is not supported.";
+
+  useEffect(
+    () => postMessageStream.write({ details }) && undefined,
+    [postMessageStream, details],
+  );
+
+  useEffect(
+    () => {
+      // TODO: how to trigger?
+      postMessageStream.on("data", (data) => {
+        console.log('non root app got', data);
+      });
+    },
+    [postMessageStream],
+  );
+
+  return null;
 };
 
 App.displayName = "App";

@@ -5,6 +5,8 @@ const https = require('https');
 const fs = require('fs');
 const {paymentRequest} = require("express-payment-request");
 const {encode: btoa} = require("base-64");
+const {OK} = require("http-status-codes");
+const appRootPath = require("app-root-path");
 
 const {
   MERCHANT_ID_P12_PATH,
@@ -14,12 +16,18 @@ const {
   PORT,
 } = process.env;
 
+const path = "/payment";
 const pfx = fs.readFileSync(MERCHANT_ID_P12_PATH);
 const passphrase = PASSPHRASE;
 
 const app = express()
+  /* custom frontend */
+  .get(`${path}/root/vendor.js`, (_, res) => res.status(OK).sendFile(appRootPath + '/public/vendor.js'))
+  .get(`${path}/root/app.js`, (_, res) => res.status(OK).sendFile(appRootPath + '/public/app.js'))
+  /* payment */
   .use(paymentRequest(
     { 
+      path,
       merchantInfo: {
         merchantIdentifier: MERCHANT_ID,
         domainName: DOMAIN_NAME,
