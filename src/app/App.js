@@ -1,20 +1,17 @@
 import React, {useEffect, useCallback, useState} from "react";
 import PropTypes from "prop-types";
-import withPaymentRequest from "react-payment-request-api";
 import axios from "axios";
 import {encode as btoa} from "base-64";
 
 // XXX: Obviously this is super apple-pay specific, but we can extend this in future.
 const App = ({isServerSide, methodData, details, options, path, host, postMessageStream, ...extraProps}) => {
-  const [paymentRequestAvailable] = useState(
-    () => !!window.PaymentRequest,
-    //() => (window.ApplePaySession && ApplePaySession.canMakePayments() && window.PaymentRequest),
-  );
-  const requestPay = useCallback(
+
+  const requestPayment = useCallback(
     () => {
       if (!window.PaymentRequest) {
         return Promise.reject(new Error(`Payment Requests are not supported on this browser.`));
       }
+
       const request = new PaymentRequest(methodData, details, options);
       request.onmerchantvalidation = (event) => {
         const {validationURL: url} = event;
@@ -26,27 +23,20 @@ const App = ({isServerSide, methodData, details, options, path, host, postMessag
           );
       };
 
-      /* show payment request modal */
       return request.show()
-        // TODO: modulate response? remember that the btoa can be exploited...
         .then(response => response.complete("success"));
     },
     [methodData, details, options],
   );
 
   useEffect(
-    () => postMessageStream.write({ details }) && undefined,
+    () => postMessageStream.write({ type: "details", details }) && undefined,
     [postMessageStream, details],
   );
 
   useEffect(
-    () => {
-      // TODO: how to trigger?
-      postMessageStream.on("data", (data) => {
-        console.log('non root app got', data);
-      });
-    },
-    [postMessageStream],
+    () => postMessageStream.on("data", ({type}) => (type === "request-payment") && requestPayment()) && undefined,
+    [postMessageStream, requestPayment],
   );
 
   return null;

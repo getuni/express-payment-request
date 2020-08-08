@@ -1,19 +1,19 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import PropTypes from "prop-types";
 
 function App({ postMessageStream }) {
+  const [details, setDetails] = useState(null);
   useEffect(
-    () => {
-      postMessageStream.on('data', (data) => console.log('i got data', data))
-    },
-    [postMessageStream],
+    () => postMessageStream.on('data', ({type, details}) => (type === "details") && setDetails(details)) && undefined,
+    [postMessageStream, setDetails],
   );
   return (
     <div>
+      {!!details && (
+        <div children={JSON.stringify(details)} />
+      )}
       <button
-        onClick={() => {
-          postMessageStream.write({ type: "please pay" });
-        }}
+        onClick={() => postMessageStream.write({ type: "request-payment" })}
         style={{
           backgroundColor: "pink",
         }}
