@@ -12,7 +12,7 @@ const App = ({isServerSide, methodData, details, options, path, host, postMessag
   const shouldReturnResult = useCallback(
     (result) => {
       const q = deepLinkUri.includes("?") ? "&" : "?";
-      return window.location.href = `${deepLinkUri}${q}paymentRequest=${btoa(JSON.stringify(result))}`;
+      return window.location.href = `${deepLinkUri}${q}paymentResult=${btoa(JSON.stringify(result))}`;
     },
     [deepLinkUri],
   );
