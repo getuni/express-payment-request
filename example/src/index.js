@@ -91,6 +91,8 @@ const details = {
   },
 };
 
+const deepLinkUri = "myapp://some/endpoint";
+
 // XXX: Prints example call formats to define payments. (Each charge $0.01, http/https).
-console.log(`http://localhost:3001/payment?details=${btoa(JSON.stringify(details))}`);
-console.log(`https://localhost:3000/payment?details=${btoa(JSON.stringify(details))}`);
+console.log(`http://localhost:3001/payment?details=${btoa(JSON.stringify(details))}&deepLinkUri=${btoa(deepLinkUri)}`);
+console.log(`https://localhost:3000/payment?details=${btoa(JSON.stringify(details))}&deepLinkUri=${btoa(deepLinkUri)}`);

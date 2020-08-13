@@ -37,7 +37,7 @@ const app = ({path, methodData}) => (req, res, next) => Promise
   .then(
     () => {
       const {query} = req;
-      const {details} = query;
+      const {details, deepLinkUri} = query;
       const host = `https://${req.get("host")}`;
       const html = `
 <!DOCTYPE html>
@@ -52,6 +52,7 @@ const app = ({path, methodData}) => (req, res, next) => Promise
       window.__REACT_APP_CONFIG__ = {
         path: "${path}",
         host: "${host}",
+        deepLinkUri: "${atob(deepLinkUri)}",
         methodData: ${JSON.stringify(methodData)},
         details: ${atob(details)}, 
       };

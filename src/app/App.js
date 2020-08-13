@@ -4,12 +4,32 @@ import axios from "axios";
 import {encode as btoa} from "base-64";
 
 // XXX: Obviously this is super apple-pay specific, but we can extend this in future.
-const App = ({isServerSide, methodData, details, options, path, host, postMessageStream, ...extraProps}) => {
+const App = ({isServerSide, methodData, details, options, path, host, postMessageStream, deepLinkUri, ...extraProps}) => {
   const [latch] = useState([{
     resolve: null, reject: null, result: null,
   }]);
 
-  const shouldResolve = useCallback(() => latch[0].resolve(latch[0].result), [latch]);
+  const shouldReturnResult = useCallback(
+    (result) => {
+      const q = deepLinkUri.includes("?") ? "&" : "?";
+      return window.location.href = `${deepLinkUri}${q}paymentRequest=${btoa(JSON.stringify(result))}`;
+    },
+    [deepLinkUri],
+  );
+
+  const shouldResolve = useCallback(
+    () => Promise
+      .resolve()
+      .then(
+        () => {
+          const {resolve, result} = latch[0];
+          return resolve(result);
+        },
+      )
+      .then(() => latch[0].result)
+      .then(result => shouldReturnResult(result)),
+    [latch, deepLinkUri, shouldReturnResult],
+  );
   const shouldReject = useCallback(() => latch[0].reject(new Error("Implementor rejected payment completion.")), [latch]);
 
   const requestPayment = useCallback(
@@ -83,6 +103,7 @@ App.propTypes = {
   options: PropTypes.shape({}),
   path: PropTypes.string.isRequired,
   host: PropTypes.string.isRequired,
+  deepLinkUri: PropTypes.string.isRequired,
 };
 
 App.defaultProps = {
