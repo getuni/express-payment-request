@@ -52,7 +52,7 @@ const app = ({path, methodData}) => (req, res, next) => Promise
       window.__REACT_APP_CONFIG__ = {
         path: "${path}",
         host: "${host}",
-        deepLinkUri: "${atob(deepLinkUri)}",
+        deepLinkUri: ${!!deepLinkUri ? `"${atob(deepLinkUri)}"` : null},
         methodData: ${JSON.stringify(methodData)},
         details: ${atob(details)}, 
       };

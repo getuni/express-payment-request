@@ -11,8 +11,11 @@ const App = ({isServerSide, methodData, details, options, path, host, postMessag
 
   const shouldReturnResult = useCallback(
     (result) => {
-      const q = deepLinkUri.includes("?") ? "&" : "?";
-      return window.location.href = `${deepLinkUri}${q}paymentResult=${btoa(JSON.stringify(result))}`;
+      if (!!deepLinkUri) {
+        const q = deepLinkUri.includes("?") ? "&" : "?";
+        window.location.href = `${deepLinkUri}${q}paymentResult=${btoa(JSON.stringify(result))}`;
+      }
+      return undefined;
     },
     [deepLinkUri],
   );
@@ -103,7 +106,7 @@ App.propTypes = {
   options: PropTypes.shape({}),
   path: PropTypes.string.isRequired,
   host: PropTypes.string.isRequired,
-  deepLinkUri: PropTypes.string.isRequired,
+  deepLinkUri: PropTypes.string,
 };
 
 App.defaultProps = {
@@ -113,6 +116,7 @@ App.defaultProps = {
     requestPayerEmail: false,
     requestPayerPhone: false,
   },
+  deepLinkUri: null,
 };
 
 export default App;
