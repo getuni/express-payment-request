@@ -32,7 +32,7 @@ const validate = ({ merchantInfo, https: { ...extras } }) => (req, res, next) =>
   .then(({data}) => res.status(OK).json(data))
   .catch(next);
 
-const app = ({path, methodData}) => (req, res, next) => Promise
+const app = ({path, methodData, options}) => (req, res, next) => Promise
   .resolve()
   .then(
     () => {
@@ -55,6 +55,7 @@ const app = ({path, methodData}) => (req, res, next) => Promise
         deepLinkUri: ${!!deepLinkUri ? `"${atob(deepLinkUri)}"` : null},
         methodData: ${JSON.stringify(methodData)},
         details: ${atob(details)}, 
+        options: ${JSON.stringify(options)},
       };
     </script>
   </head>
@@ -75,6 +76,11 @@ const app = ({path, methodData}) => (req, res, next) => Promise
 
 const defaultOptions = {
   path: "/payment",
+  options: {
+    requestShipping: false,
+    requestPayerEmail: false,
+    requestPayerPhone: false,
+  }
 };
 
 export const paymentRequest = (options = defaultOptions) => {
