@@ -72,18 +72,13 @@ const App = ({isServerSide, methodData, details, options, path, host, postMessag
 
         session.onvalidatemerchant = (event) => {
           const {validationURL: url} = event;
-          return new Promise(
-            (resolve, reject) => {
+          // XXX: Not needed for this kind of request. :/
+          latch[0].resolve = resolve;
+          latch[0].reject = reject;
 
-              // XXX: Not needed for this kind of request. :/
-              latch[0].resolve = resolve;
-              latch[0].reject = reject;
-
-              return axios({url: `${host}${path}/validate?url=${btoa(url)}`, method: "get"})
-                .then(({data}) => data)
-                .then(merchantSession => session.completeMerchantValidation(merchantSession));
-            },
-          );
+          return axios({url: `${host}${path}/validate?url=${btoa(url)}`, method: "get"})
+            .then(({data}) => data)
+            .then(merchantSession => session.completeMerchantValidation(merchantSession));
         };
 
         session.onpaymentauthorized = function (event) {
@@ -93,8 +88,10 @@ const App = ({isServerSide, methodData, details, options, path, host, postMessag
           /* mark payment as complete */
           session.completePayment(ApplePaySession.STATUS_SUCCESS);
 
+          console.warn('payment is marked as completed');
+
           /* wait until dialog is dismissed before writing result */
-          return new Promise(resolve => setTimeout(resolve, 250))
+          new Promise(resolve => setTimeout(resolve, 1000))
             .then(() => postMessageStream.write({type: "result", result}));
         };
 
