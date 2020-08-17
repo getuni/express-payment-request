@@ -75,10 +75,11 @@ const App = ({isServerSide, methodData, details, options, path, host, postMessag
           return new Promise(
             (resolve, reject) => {
 
-              latch[0].resolve = () => Promise
+              latch[0].resolve = e => Promise
                 .resolve()
                 .then(() => session.completePayment(ApplePaySession.STATUS_SUCCESS))
-                .then(resolve);
+                .then(() => new Promise(resolve => setTimeout(resolve, 250)))
+                .then(() => resolve(e));
 
               latch[0].reject = reject;
 
