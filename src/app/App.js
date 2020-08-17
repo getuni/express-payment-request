@@ -75,12 +75,8 @@ const App = ({isServerSide, methodData, details, options, path, host, postMessag
           return new Promise(
             (resolve, reject) => {
 
-              latch[0].resolve = e => Promise
-                .resolve()
-                .then(() => session.completePayment(ApplePaySession.STATUS_SUCCESS))
-                .then(() => new Promise(resolve => setTimeout(resolve, 250)))
-                .then(() => resolve(e));
-
+              // XXX: Not needed for this kind of request. :/
+              latch[0].resolve = resolve;
               latch[0].reject = reject;
 
               return axios({url: `${host}${path}/validate?url=${btoa(url)}`, method: "get"})
@@ -93,7 +89,13 @@ const App = ({isServerSide, methodData, details, options, path, host, postMessag
         session.onpaymentauthorized = function (event) {
           const {payment: {token: result}} = event;
           latch[0].result = result;
-          return postMessageStream.write({type: "result", result});
+
+          /* mark payment as complete */
+          session.completePayment(ApplePaySession.STATUS_SUCCESS);
+
+          /* wait until dialog is dismissed before writing result */
+          return new Promise(resolve => setTimeout(resolve, 250))
+            .then(() => postMessageStream.write({type: "result", result}));
         };
 
         return session.begin();
@@ -107,8 +109,10 @@ const App = ({isServerSide, methodData, details, options, path, host, postMessag
           .complete(
             new Promise(
               (resolve, reject) => {
+
                 latch[0].resolve = resolve;
                 latch[0].reject = reject;
+
                 return axios({url: `${host}${path}/validate?url=${btoa(url)}`, method: "get"})
                   .then(({data}) => data)
                   .then(

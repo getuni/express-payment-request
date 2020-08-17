@@ -92,7 +92,7 @@ const details = {
   },
 };
 
-const deepLinkUri = "myapp://some/endpoint";
+const deepLinkUri = "https://www.google.com";
 
 // XXX: Prints example call formats to define payments. (Each charge $0.01, http/https).
 console.log(`http://localhost:3001/payment?details=${btoa(JSON.stringify(details))}&deepLinkUri=${btoa(deepLinkUri)}`);
