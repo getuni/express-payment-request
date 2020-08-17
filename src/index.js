@@ -32,7 +32,7 @@ const validate = ({ merchantInfo, https: { ...extras } }) => (req, res, next) =>
   .then(({data}) => res.status(OK).json(data))
   .catch(next);
 
-const app = ({path, methodData, options}) => (req, res, next) => Promise
+const app = ({path, methodData, options, forceApplePayJS}) => (req, res, next) => Promise
   .resolve()
   .then(
     () => {
@@ -56,6 +56,7 @@ const app = ({path, methodData, options}) => (req, res, next) => Promise
         methodData: ${JSON.stringify(methodData)},
         details: ${atob(details)}, 
         options: ${JSON.stringify(options)},
+        forceApplePayJS: ${forceApplePayJS},
       };
     </script>
   </head>
@@ -80,7 +81,8 @@ const defaultOptions = {
     requestShipping: false,
     requestPayerEmail: false,
     requestPayerPhone: false,
-  }
+  },
+  forceApplePayJS: false,
 };
 
 export const paymentRequest = (options = defaultOptions) => {

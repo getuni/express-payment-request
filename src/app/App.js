@@ -4,7 +4,7 @@ import axios from "axios";
 import {encode as btoa} from "base-64";
 
 // XXX: Obviously this is super apple-pay specific, but we can extend this in future.
-const App = ({isServerSide, methodData, details, options, path, host, postMessageStream, deepLinkUri, ...extraProps}) => {
+const App = ({isServerSide, methodData, details, options, path, host, postMessageStream, deepLinkUri, forceApplePayJS, ...extraProps}) => {
   const [latch] = useState([{
     resolve: null, reject: null, result: null,
   }]);
@@ -35,13 +35,68 @@ const App = ({isServerSide, methodData, details, options, path, host, postMessag
   );
   const shouldReject = useCallback(() => latch[0].reject(new Error("Implementor rejected payment completion.")), [latch]);
 
+  const shouldUseApplePayJS = forceApplePayJS && window.ApplePaySession && ApplePaySession.canMakePayments();
+
   const requestPayment = useCallback(
     () => {
       if (!window.PaymentRequest) {
         return Promise.reject(new Error(`Payment Requests are not supported on this browser.`));
       }
-      
+
       latch[0].result = null;
+
+      if (shouldUseApplePayJS) {
+        const session = new ApplePaySession(
+          1,
+          // TODO: need to abstract this configuration
+          {
+            // TODO: need to iterate across the payment object
+            countryCode: "US",
+            merchantCapabilities: [
+              "supports3DS"
+            ],
+            supportedNetworks: [
+              "visa",
+              "masterCard",
+              "amex",
+              "discover"
+            ],
+            currencyCode: details.total.amount.currency,
+            total: {
+              type: "final",
+              label: details.total.label,
+              amount: details.total.amount.value,
+            },
+          },
+        );
+
+        session.onvalidatemerchant = (event) => {
+          const {validationURL: url} = event;
+          return new Promise(
+            (resolve, reject) => {
+
+              latch[0].resolve = () => Promise
+                .resolve()
+                .then(() => session.completePayment(ApplePaySession.STATUS_SUCCESS))
+                .then(resolve);
+
+              latch[0].reject = reject;
+
+              return axios({url: `${host}${path}/validate?url=${btoa(url)}`, method: "get"})
+                .then(({data}) => data)
+                .then(merchantSession => session.completeMerchantValidation(merchantSession));
+            },
+          );
+        };
+
+        session.onpaymentauthorized = function (event) {
+          const {payment: {token: result}} = event;
+          latch[0].result = result;
+          return postMessageStream.write({type: "result", result});
+        };
+
+        return session.begin();
+      }
 
       const request = new PaymentRequest(methodData, details, options);
 
@@ -66,10 +121,11 @@ const App = ({isServerSide, methodData, details, options, path, host, postMessag
             false,
           );
       };
+
       return request.show()
         .then(response => response.complete("success"));
     },
-    [postMessageStream, methodData, details, options, latch],
+    [postMessageStream, methodData, details, options, latch, shouldUseApplePayJS],
   );
 
   useEffect(
@@ -107,6 +163,7 @@ App.propTypes = {
   path: PropTypes.string.isRequired,
   host: PropTypes.string.isRequired,
   deepLinkUri: PropTypes.string,
+  forceApplePayJS: PropTypes.bool,
 };
 
 App.defaultProps = {
@@ -117,6 +174,7 @@ App.defaultProps = {
     requestPayerPhone: false,
   },
   deepLinkUri: null,
+  forceApplePayJS: false,
 };
 
 export default App;

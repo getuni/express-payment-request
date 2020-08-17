@@ -28,6 +28,7 @@ const app = express()
   .use(paymentRequest(
     { 
       path,
+      forceApplePayJS: true,
       merchantInfo: {
         merchantIdentifier: MERCHANT_ID,
         domainName: DOMAIN_NAME,

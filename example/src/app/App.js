@@ -23,6 +23,7 @@ function App({ postMessageStream }) {
   useEffect(
     () => {
       if (!!result) {
+        console.log('got result', result);
         return postMessageStream.write({type: "resolve"}) && undefined;
       }
       return undefined;
