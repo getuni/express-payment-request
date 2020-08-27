@@ -72,9 +72,10 @@ const App = ({isServerSide, methodData, details, options, path, host, postMessag
 
         session.onvalidatemerchant = (event) => {
           const {validationURL: url} = event;
+
           // XXX: Not needed for this kind of request. :/
-          latch[0].resolve = resolve;
-          latch[0].reject = reject;
+          latch[0].resolve = e => e;
+          latch[0].reject = e => e;
 
           return axios({url: `${host}${path}/validate?url=${btoa(url)}`, method: "get"})
             .then(({data}) => data)
