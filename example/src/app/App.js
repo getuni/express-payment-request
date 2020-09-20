@@ -23,7 +23,6 @@ function App({ postMessageStream }) {
   useEffect(
     () => {
       if (!!result) {
-        console.log('got result', result);
         return postMessageStream.write({type: "resolve"}) && undefined;
       }
       return undefined;
@@ -41,6 +40,13 @@ function App({ postMessageStream }) {
           backgroundColor: "pink",
         }}
         children="Custom Payment Button"
+      />
+      <button
+        onClick={() => postMessageStream.write({type: "cancel"})}
+        style={{
+          backgroundColor: "red",
+        }}
+        children="Cancel Payment"
       />
     </div>
   );

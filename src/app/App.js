@@ -33,7 +33,10 @@ const App = ({isServerSide, methodData, details, options, path, host, postMessag
       .then(result => shouldReturnResult(result)),
     [latch, deepLinkUri, shouldReturnResult],
   );
+
   const shouldReject = useCallback(() => latch[0].reject(new Error("Implementor rejected payment completion.")), [latch]);
+
+  const shouldCancel = useCallback(() => shouldReturnResult({ type: "payment-cancelled" }), [shouldReturnResult]);
 
   const shouldUseApplePayJS = forceApplePayJS && window.ApplePaySession && ApplePaySession.canMakePayments();
 
@@ -146,11 +149,13 @@ const App = ({isServerSide, methodData, details, options, path, host, postMessag
           return shouldResolve();
         } else if (type === "reject") {
           return shouldReject();
+        } else if (type === "cancel") {
+          return shouldCancel();
         }
         return console.warn(`Encountered unexpected type, "${type}". This will be ignored.`);
       },
     ) && undefined,
-    [postMessageStream, requestPayment, shouldResolve, shouldReject],
+    [postMessageStream, requestPayment, shouldResolve, shouldReject, shouldCancel],
   );
 
   return null;
