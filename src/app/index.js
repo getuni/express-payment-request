@@ -1,7 +1,3 @@
-if (!window.Buffer) {
-  window.Buffer = require("buffer");
-}
-
 import "@babel/polyfill";
 
 import React from "react";

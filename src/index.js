@@ -1,3 +1,6 @@
+// https://stackoverflow.com/a/50377270/1701465
+global.Buffer = global.Buffer || require('buffer').Buffer;
+
 import "@babel/polyfill";
 
 import * as React from "react";
@@ -49,6 +52,9 @@ const app = ({path, methodData, options, forceApplePayJS}) => (req, res, next) =
     <style>
       body { margin:0; }
     </style>
+    <script>
+      var global = global || window;
+    </script>
     <script type="text/javascript">
       window.__REACT_APP_CONFIG__ = {
         path: "${path}",
