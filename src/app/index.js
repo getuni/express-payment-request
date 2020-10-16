@@ -1,4 +1,6 @@
-!window.Buffer && window.Buffer = require("buffer");
+if (!window.Buffer) {
+  window.Buffer = require("buffer");
+}
 
 import "@babel/polyfill";
 
